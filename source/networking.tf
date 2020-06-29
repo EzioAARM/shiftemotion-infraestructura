@@ -34,3 +34,29 @@ resource "aws_route_table_association" "public_subnet" {
     subnet_id       = aws_subnet.public.id
     route_table_id  = aws_route_table.route_table.id
 }
+
+resource "aws_security_group" "sg_global" {
+    name            = "general_security_group"
+    description     = "Security group para ShiftEmotion"
+    vpc_id          = aws_vpc.ShiftEmotionVPC.id
+
+    ingress {
+        description = "Conexiones desde la VPC"
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_blocks = [
+            aws_vpc.ShiftEmotionVPC.cidr_block
+        ]
+    }
+
+    egress {
+        description = "Salida a cualquier lugar"
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_blocks = [
+            "0.0.0.0/0"
+        ]
+    }
+}
