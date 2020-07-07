@@ -1,144 +1,53 @@
-#Funciones lambda
-resource "aws_lambda_function" "jwtValidation" {
-    filename                = "./lambda/main.zip"
-    function_name           = "jwtValidation"
-    role                    = var.lambda_policy_arn
-    handler                 = "main"
-    runtime                 = "go1.x"
-    vpc_config {
-        subnet_ids          = [
-            aws_subnet.private.id
-        ]
-        security_group_ids  = [
-            aws_security_group.sg_global.id
-        ]
+#Load Balancer
+resource "aws_lb" "shiftEmotionSpotifyBlancer" {
+    name                = "shiftEmotionSpotifyBlancer"
+    internal            = false
+    load_balancer_type  = "application"
+    security_groups     = [
+        aws_security_group.sg_global.id
+    ]
+    subnets             = [
+        aws_subnet.public.*.id
+    ]
+}
+
+resource "aws_ecr_repository" "shiftEmotion" {
+    name                    = "shiftEmotionSpotify"
+    image_tag_mutability    = "MUTABLE"
+    image_scanning_configuration {
+        scan_on_push        = false
     }
 }
 
-resource "aws_lambda_function" "login" {
-    filename                = "./lambda/main.zip"
-    function_name           = "login"
-    role                    = var.lambda_policy_arn
-    handler                 = "main"
-    runtime                 = "go1.x"
-    vpc_config {
-        subnet_ids          = [
-            aws_subnet.private.id
-        ]
-        security_group_ids  = [
-            aws_security_group.sg_global.id
+resource "aws_ecs_task_definition" "shiftEmotionSpotifyTask" {
+    family                  = "shiftEmotionSpotifyTask"
+    container_definitions   = <<TASK_DEFINITION
+[
+    {
+        "cpu": 0.5,
+        "memory": 128,
+        "execution_role_arn": ${var.task_policy_arn}
+        "image": ${aws_ecr_repository.shiftEmotion.repository_url},
+        "portMappings": [
+            {
+                "containerHost": 80,
+                "hostPort": 80
+            }
         ]
     }
+]
+TASK_DEFINITION
 }
 
-resource "aws_lambda_function" "generarToken" {
-    filename                = "./lambda/main.zip"
-    function_name           = "generarToken"
-    role                    = var.lambda_policy_arn
-    handler                 = "main"
-    runtime                 = "go1.x"
-    vpc_config {
-        subnet_ids          = [
-            aws_subnet.private.id
-        ]
-        security_group_ids  = [
-            aws_security_group.sg_global.id
-        ]
-    }
+resource "aws_ecs_cluster" "shiftEmotionSpotifyCluster" {
+    name                    = "ShiftEmotionSpotifyCluster"
+    capacity_providers      = "FARGATE"
 }
 
-resource "aws_lambda_function" "validarToken" {
-    filename                = "./lambda/main.zip"
-    function_name           = "validarToken"
-    role                    = var.lambda_policy_arn
-    handler                 = "main"
-    runtime                 = "go1.x"
-    vpc_config {
-        subnet_ids          = [
-            aws_subnet.private.id
-        ]
-        security_group_ids  = [
-            aws_security_group.sg_global.id
-        ]
-    }
-}
-
-resource "aws_lambda_function" "recomendacionesIniciales" {
-    filename                = "./lambda/main.zip"
-    function_name           = "recomendacionesIniciales"
-    role                    = var.lambda_policy_arn
-    handler                 = "main"
-    runtime                 = "go1.x"
-    vpc_config {
-        subnet_ids          = [
-            aws_subnet.private.id
-        ]
-        security_group_ids  = [
-            aws_security_group.sg_global.id
-        ]
-    }
-}
-
-resource "aws_lambda_function" "obtenerHistorialFotos" {
-    filename                = "./lambda/main.zip"
-    function_name           = "obtenerHistorialFotos"
-    role                    = var.lambda_policy_arn
-    handler                 = "main"
-    runtime                 = "go1.x"
-    vpc_config {
-        subnet_ids          = [
-            aws_subnet.private.id
-        ]
-        security_group_ids  = [
-            aws_security_group.sg_global.id
-        ]
-    }
-}
-
-resource "aws_lambda_function" "obtenerRecomendacionFotos" {
-    filename                = "./lambda/main.zip"
-    function_name           = "obtenerRecomendacionFotos"
-    role                    = var.lambda_policy_arn
-    handler                 = "main"
-    runtime                 = "go1.x"
-    vpc_config {
-        subnet_ids          = [
-            aws_subnet.private.id
-        ]
-        security_group_ids  = [
-            aws_security_group.sg_global.id
-        ]
-    }
-}
-
-resource "aws_lambda_function" "obtenerPerfil" {
-    filename                = "./lambda/main.zip"
-    function_name           = "obtenerPerfil"
-    role                    = var.lambda_policy_arn
-    handler                 = "main"
-    runtime                 = "go1.x"
-    vpc_config {
-        subnet_ids          = [
-            aws_subnet.private.id
-        ]
-        security_group_ids  = [
-            aws_security_group.sg_global.id
-        ]
-    }
-}
-
-resource "aws_lambda_function" "actualizarPerfil" {
-    filename                = "./lambda/main.zip"
-    function_name           = "actualizarPerfil"
-    role                    = var.lambda_policy_arn
-    handler                 = "main"
-    runtime                 = "go1.x"
-    vpc_config {
-        subnet_ids          = [
-            aws_subnet.private.id
-        ]
-        security_group_ids  = [
-            aws_security_group.sg_global.id
-        ]
-    }
+resource "aws_ecs_service" "SpotifyIntegrationService" {
+    name                    = "SpotifyIntegrationTask"
+    cluster                 = aws_ecs_cluster.shiftEmotionSpotifyCluster.id
+    task_definition         = aws_ecs_task_definition.shiftEmotionSpotifyTask.arn
+    desired_count           = 2
+    iam_role                = ""
 }

@@ -17,7 +17,7 @@ module "shiftEmotionRegion1" {
         aws = aws
     }
 
-    lambda_policy_arn = module.shiftEmotionPermission.lambda_policy_arn
+    task_policy_arn = module.shiftEmotionPermission.task_definition_role_arn
 }
 
 module "shiftEmotionRegion2" {
@@ -26,6 +26,6 @@ module "shiftEmotionRegion2" {
     providers = {
         aws = aws.us-west-2
     }
-    
-    lambda_policy_arn = module.shiftEmotionPermission.lambda_policy_arn
+
+    task_policy_arn = module.shiftEmotionPermission.task_definition_role_arn
 }

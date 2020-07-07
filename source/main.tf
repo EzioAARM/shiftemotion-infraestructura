@@ -1,2 +1,1 @@
-variable "lambda_policy_arn" {}
-
+variable "task_policy_arn" {}
