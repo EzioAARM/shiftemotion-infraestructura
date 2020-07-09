@@ -96,7 +96,7 @@ resource "aws_iam_role" "LambdaPipelineIAMRole" {
 resource "aws_iam_role_policy" "LambdaPipelineIAMPolicy" {
     name                        = "LambdaPipelineIAMPolicy"
     role                        = aws_iam_role.LambdaPipelineIAMRole.id
-    policy = <<EOF
+    policy                      = <<EOF
 {
     "Statement": [
         {
