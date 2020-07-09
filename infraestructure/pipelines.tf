@@ -416,6 +416,7 @@ resource "aws_codepipeline" "ShiftEmotionLambdaPipeline" {
     stage {
         name                    = "Deploy"
         action {
+            run_order           = 1
             name                = "Deploy"
             category            = "Deploy"
             owner               = "AWS"
@@ -436,6 +437,7 @@ resource "aws_codepipeline" "ShiftEmotionLambdaPipeline" {
         }
 
         action {
+            run_order           = 2
             name                = "DeployChangeSet"
             category            = "Deploy"
             owner               = "AWS"
