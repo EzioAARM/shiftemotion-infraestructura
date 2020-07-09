@@ -293,7 +293,7 @@ resource "aws_iam_role" "LambdaDeployIAMRole" {
 
 resource "aws_iam_role_policy" "LambdaDeployIAMPolicy" {
     name                        = "LambdaDeployIAMPolicy"
-    role                        = aws_iam_role.LambdaDeployIAMRole
+    role                        = aws_iam_role.LambdaDeployIAMRole.id
     policy                      = <<EOF
 {
     "Version": "2012-10-17",
