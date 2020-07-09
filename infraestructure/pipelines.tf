@@ -1,9 +1,8 @@
 # Pipeline para continous delivery de funciones Lambda
 resource "aws_s3_bucket" "ShiftEmotionPipelinesLambda" {
-    bucket                  = "codebuildshiftemotiontest"
     acl                     = "private"
     tags                    = {
-        Name                = "codebuildshiftemotiontest"
+        Project                = "Bucket para Code Build de proyecto de despliegue de AWS SAM"
     }
 }
 
@@ -61,6 +60,10 @@ resource "aws_codebuild_project" "shiftemtion_sam_project" {
         compute_type            = "BUILD_GENERAL1_SMALL"
         image                   = "aws/codebuild/standard:4.0"
         type                    = "LINUX_CONTAINER"
+        environment_variable {
+            name                = "BUCKET"
+            value               = aws_s3_bucket.ShiftEmotionPipelinesLambda.id
+        }
     }
 
     source {
