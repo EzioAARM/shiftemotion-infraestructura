@@ -55,7 +55,7 @@ resource "aws_codebuild_project" "shiftemtion_sam_project" {
     description                 = "Proyecto de compilación para proyecto en AWS SAM"
     service_role                = aws_iam_role.LambdaBuildIAMRole.arn
     artifacts {
-        type = "NO_ARTIFACTS"
+        type = "CODEPIPELINE"
     }
     environment {
         compute_type            = "BUILD_GENERAL1_SMALL"
@@ -290,6 +290,7 @@ resource "aws_codepipeline" "ShiftEmotionLambdaPipeline" {
                 Owner               = "EzioAARM"
                 Repo                = "shiftemotion-backend"
                 Branch              = "master"
+                OAuthToken          = "2d1313ee63786c82e2ff51f8db0afbfa1de9be1a"
             }
         }
     }
