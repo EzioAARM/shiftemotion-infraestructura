@@ -5,6 +5,10 @@ resource "aws_lb_target_group" "shiftEmotionSpotifyTarget" {
     protocol            = "HTTP"
     target_type         = "ip"
     vpc_id              = aws_vpc.ShiftEmotionVPC.id
+
+    depends_on          = [
+                            aws_lb.shiftEmotionSpotifyBlancer
+                        ]
 }
 
 resource "aws_lb" "shiftEmotionSpotifyBlancer" {
