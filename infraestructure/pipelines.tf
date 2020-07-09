@@ -279,12 +279,29 @@ resource "aws_iam_role" "LambdaDeployIAMRole" {
         {
             "Effect": "Allow",
             "Principal": {
-            "Service": [
-                "codepipeline.amazonaws.com",
-                "codedeploy.amazonaws.com"
-            ]
+                "Service": [
+                    "codedeploy.amazonaws.com"
+                ]
+            },
+            "Action": "sts:AssumeRole"
         },
-        "Action": "sts:AssumeRole"
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": [
+                    "codepipeline.amazonaws.com"
+                ]
+            },
+            "Action": "sts:AssumeRole"
+        },
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": [
+                    ${aws_iam_role.LambdaPipelineIAMRole.arn}
+                ]
+            },
+            "Action": "sts:AssumeRole"
         }
     ]
 }
