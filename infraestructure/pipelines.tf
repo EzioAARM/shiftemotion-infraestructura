@@ -307,7 +307,7 @@ resource "aws_iam_role" "LambdaDeployIAMRole" {
             "Effect": "Allow",
             "Principal": {
                 "AWS": [
-                    "${aws_iam_role.LambdaPipelineIAMRole.arn}"
+                    ${aws_iam_role.LambdaPipelineIAMRole.arn}
                 ]
             },
             "Action": "sts:AssumeRole"
