@@ -429,13 +429,12 @@ resource "aws_codepipeline" "ShiftEmotionLambdaPipeline" {
                 Capabilities    = "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND"
                 StackName       = "shiftemotion-lambda-backend"
                 TemplatePath    = "BuildArtifact::outputtemplate.yml"
+                ChangeSetName   = "shiftemotion-lambda-backend-changeset"
+                RoleArn         = aws_iam_role.LambdaDeployIAMRole.arn
             }
             role_arn            = aws_iam_role.LambdaDeployIAMRole.arn
         }
-    }
 
-    stage {
-        name                    = "DeployChangeSet"
         action {
             name                = "DeployChangeSet"
             category            = "Deploy"
