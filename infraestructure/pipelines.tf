@@ -270,6 +270,75 @@ resource "aws_iam_role_policy" "LambdaPipelineIAMPolicy" {
     EOF
 }
 
+resource "aws_iam_role" "LambdaDeployIAMRole" {
+    name                        = "LambdaDeployIAMRole"
+    assume_role_policy          = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+            "Service": [
+                "codepipeline.amazonaws.com",
+                "codedeploy.amazonaws.com"
+            ]
+        },
+        "Action": "sts:AssumeRole"
+        }
+    ]
+}
+    EOF
+}
+
+resource "aws_iam_role_policy" "LambdaDeployIAMPolicy" {
+    name                        = "LambdaDeployIAMPolicy"
+    role                        = aws_iam_role.LambdaDeployIAMRole
+    assume_role_policy          = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:*"
+            ],
+            "Resource": "arn:aws:logs:*:*:*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": "arn:aws:s3:::*"
+        },
+        {
+            "Action": [
+                "apigateway:*",
+                "codedeploy:*",
+                "lambda:*",
+                "cloudformation:CreateChangeSet",
+                "iam:GetRole",
+                "iam:CreateRole",
+                "iam:DeleteRole",
+                "iam:PutRolePolicy",
+                "iam:AttachRolePolicy",
+                "iam:DeleteRolePolicy",
+                "iam:DetachRolePolicy",
+                "iam:PassRole",
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "s3:GetBucketVersioning"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        }
+    ]
+}
+    EOF
+}
+
 resource "aws_codepipeline" "ShiftEmotionLambdaPipeline" {
     name                        = "ShiftEmotionLambdaPipeline"
     role_arn                    = aws_iam_role.LambdaPipelineIAMRole.arn
@@ -335,6 +404,7 @@ resource "aws_codepipeline" "ShiftEmotionLambdaPipeline" {
                 StackName       = "shiftemotion-lambda-backend"
                 TemplatePath    = "BuildArtifact::outputtemplate.yml"
             }
+            role_arn            = aws_iam_role.LambdaDeployIAMRole.arn
         }
     }
 
