@@ -355,7 +355,16 @@ resource "aws_iam_role_policy" "LambdaDeployIAMPolicy" {
                 "iam:PassRole",
                 "s3:GetObject",
                 "s3:GetObjectVersion",
-                "s3:GetBucketVersioning"
+                "s3:GetBucketVersioning",
+                "cloudformation:CreateStack",
+                "cloudformation:DeleteStack",
+                "cloudformation:DescribeStacks",
+                "cloudformation:UpdateStack",
+                "cloudformation:DeleteChangeSet",
+                "cloudformation:DescribeChangeSet",
+                "cloudformation:ExecuteChangeSet",
+                "cloudformation:SetStackPolicy",
+                "cloudformation:ValidateTemplate"
             ],
             "Resource": "*",
             "Effect": "Allow"
