@@ -293,7 +293,7 @@ resource "aws_codepipeline" "ShiftEmotionLambdaPipeline" {
                 Owner               = "EzioAARM"
                 Repo                = "shiftemotion-backend"
                 Branch              = "master"
-                OAuthToken          = "2d1313ee63786c82e2ff51f8db0afbfa1de9be1a"
+                OAuthToken          = var.GithubToken
             }
         }
     }
