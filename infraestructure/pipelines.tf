@@ -289,6 +289,15 @@ resource "aws_iam_role" "LambdaDeployIAMRole" {
             "Effect": "Allow",
             "Principal": {
                 "Service": [
+                    "cloudformation.amazonaws.com"
+                ]
+            },
+            "Action": "sts:AssumeRole"
+        },
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": [
                     "codepipeline.amazonaws.com"
                 ]
             },
