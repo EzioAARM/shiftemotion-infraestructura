@@ -1,1 +1,0 @@
-variable "task_policy_arn" {}
