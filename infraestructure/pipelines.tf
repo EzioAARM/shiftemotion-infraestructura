@@ -815,7 +815,8 @@ resource "aws_iam_role_policy" "ECRDeployIAMPolicy" {
                 "cloudformation:DescribeChangeSet",
                 "cloudformation:ExecuteChangeSet",
                 "cloudformation:SetStackPolicy",
-                "cloudformation:ValidateTemplate"
+                "cloudformation:ValidateTemplate",
+                "ecs:*"
             ],
             "Resource": "*",
             "Effect": "Allow"
@@ -935,7 +936,6 @@ resource "aws_codepipeline" "ShiftEmotionECRPipeLine" {
             configuration       = {
                 ClusterName     = "ShiftEmotionSpotifyCluster"
                 ServiceName     = "SpotifyAPI"
-                RoleArn         = aws_iam_role.ECRDeployIAMRole.arn
             }
             role_arn            = aws_iam_role.ECRDeployIAMRole.arn
         }
