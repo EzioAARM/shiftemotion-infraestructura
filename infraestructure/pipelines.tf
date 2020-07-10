@@ -531,9 +531,25 @@ resource "aws_codebuild_project" "shiftemotion_docker_project" {
         compute_type            = "BUILD_GENERAL1_SMALL"
         image                   = "aws/codebuild/standard:4.0"
         type                    = "LINUX_CONTAINER"
+        privileged_mode         = "true"
         environment_variable {
             name                = "BUCKET"
             value               = aws_s3_bucket.ShiftEmotionPipelinesECR.id 
+        }
+
+        environment_variable {
+            name                = "AWS_ACCOUNT_ID"
+            value               = var.AccountId
+        }
+
+        environment_variable {
+            name                = "IMAGE_REPO_NAME"
+            value               = "shiftemotionspotify"
+        }
+
+        environment_variable {
+            name                = "IMAGE_TAG"
+            value               = "latest"
         }
     }
 
