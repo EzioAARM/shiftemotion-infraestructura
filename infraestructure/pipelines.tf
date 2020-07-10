@@ -465,3 +465,132 @@ resource "aws_codepipeline" "ShiftEmotionLambdaPipeline" {
 }
 
 #Pipeline para continous delivery del servicio en Fargate
+
+#Pipeline para continous delivery de la imagen de Docker en ECR
+
+resource "aws_s3_bucket" "ShiftEmotionPipelinesECR" {
+    acl                     = "private"
+    tags                    = {
+        Project                = "Bucket para Code Build de proyecto de despliegue de imagen ECR"
+    }
+}
+
+resource "aws_iam_role" "ECRDockerBuildIAMRole" {
+    name                        = "ECRDockerBuildIAMRole"
+    assume_role_policy          = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "codebuild.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+    EOF
+}
+
+
+resource "aws_iam_role_policy" "ECRDockerBuildPolicy"{
+    role                        = aws_iam_role.ECRDockerBuildIAMRole.name
+    policy                      = <<POLICY
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Resource": "*",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "codebuild:CreateReportGroup",
+                "codebuild:CreateReport",
+                "codebuild:UpdateReport",
+                "codebuild:BatchPutTestCases",
+                "S3:*",
+                "ECR:*"
+            ]
+        }
+    ]
+}
+    POLICY
+}
+
+resource "aws_codebuild_project" "shiftemotion_docker_project" {
+    name                        = "shiftemotion_docker_project"
+    description                 = "Proyecto de compilacion para proyecto en ECR"
+    service_role                = aws_iam_role.ECRDockerBuildIAMRole.arn 
+    artifacts {
+        type = "CODEPIPELINE"
+    }
+    environment {
+        compute_type            = "BUILD_GENERAL1_SMALL"
+        image                   = "aws/codebuild/standard:4.0"
+        type                    = "LINUX_CONTAINER"
+        environment_variable {
+            name                = "BUCKET"
+            value               = aws_s3_bucket.ShiftEmotionPipelinesECR.id 
+        }
+    }
+
+    source {
+        type                    = "CODEPIPELINE"
+    }
+
+    depends_on                  = [
+        aws_s3_bucket.ShiftEmotionPipelinesECR
+    ]
+}
+
+resource "aws_codepipeline" "ShiftEmotionECRPipeLine" {
+    name                        = "ShiftEmotionECRPipeLine"
+    role_arn                    = aws_iam_role.LambdaPipelineIAMRole.arn
+    artifact_store {
+        location                = aws_s3_bucket.ShiftEmotionPipelinesECR.bucket
+        type                    = "S3"
+    }
+
+    stage {
+        name                    = "Source"
+        action {
+            name                    = "Source"
+            category                = "Source"
+            owner                   = "ThirdParty"
+            provider                = "GitHub"
+            version                 = "1"
+            output_artifacts        = [
+                "SourceArtifact"
+            ]
+            configuration           = {
+                Owner               = "EzioAARM"
+                Repo                = "shiftemotion-spotify-integration"
+                Branch              = "master"
+                OAuthToken          = var.GithubToken
+            }
+        }
+    }
+
+    stage {
+        name                    = "Build"
+        action {
+            name                = "Build"
+            category            = "Build"
+            owner               = "AWS"
+            provider            = "CodeBuild"
+            version             = "1"
+            input_artifacts     = [
+                "SourceArtifact"
+            ]
+            output_artifacts    = [
+                "BuildArtifact"
+            ]
+            configuration       = {
+                ProjectName     = "shiftemotion_docker_project"
+            }
+        }
+    }
+}
