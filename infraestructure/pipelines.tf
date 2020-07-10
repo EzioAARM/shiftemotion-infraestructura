@@ -856,6 +856,11 @@ resource "aws_codebuild_project" "shiftemotion_docker_project" {
             name                = "IMAGE_TAG"
             value               = "latest"
         }
+
+        environment_variable {
+            name                = "REPO_URI"
+            value               = aws_ecr_repository.shiftEmotion.repository_url
+        }
     }
 
     source {
