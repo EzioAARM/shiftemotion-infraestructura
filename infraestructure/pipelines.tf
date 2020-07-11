@@ -941,3 +941,358 @@ resource "aws_codepipeline" "ShiftEmotionECRPipeLine" {
         }
     }
 }
+
+#Pipeline para continous delivery de FrontEnd Web
+resource "aws_s3_bucket" "ShiftEmotionPipelinesS3website" {
+    acl                     = "private"
+    tags                    = {
+        Project                = "Bucket para Source de proyecto de despliegue de S3 static website"
+    }
+}
+
+resource "aws_iam_role" "S3PipelineRole" {
+    name                    = "S3PipelineRole"
+    assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "codepipeline.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+    EOF
+}
+
+resource "aws_iam_role_policy" "S3PipelineRolePolicy" {
+    role = aws_iam_role.S3PipelineRole.id
+    policy = <<POLICY
+{
+    "Statement": [
+        {
+            "Action": [
+                "iam:PassRole"
+            ],
+            "Resource": "*",
+            "Effect": "Allow",
+            "Condition": {
+                "StringEqualsIfExists": {
+                    "iam:PassedToService": [
+                        "cloudformation.amazonaws.com",
+                        "elasticbeanstalk.amazonaws.com",
+                        "ec2.amazonaws.com",
+                        "ecs-tasks.amazonaws.com"
+                    ]
+                }
+            }
+        },
+        {
+            "Action": [
+                "codecommit:CancelUploadArchive",
+                "codecommit:GetBranch",
+                "codecommit:GetCommit",
+                "codecommit:GetUploadArchiveStatus",
+                "codecommit:UploadArchive"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "codedeploy:CreateDeployment",
+                "codedeploy:GetApplication",
+                "codedeploy:GetApplicationRevision",
+                "codedeploy:GetDeployment",
+                "codedeploy:GetDeploymentConfig",
+                "codedeploy:RegisterApplicationRevision"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "codestar-connections:UseConnection"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "elasticbeanstalk:*",
+                "ec2:*",
+                "elasticloadbalancing:*",
+                "autoscaling:*",
+                "cloudwatch:*",
+                "s3:*",
+                "sns:*",
+                "cloudformation:*",
+                "rds:*",
+                "sqs:*",
+                "ecs:*"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "lambda:InvokeFunction",
+                "lambda:ListFunctions"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "opsworks:CreateDeployment",
+                "opsworks:DescribeApps",
+                "opsworks:DescribeCommands",
+                "opsworks:DescribeDeployments",
+                "opsworks:DescribeInstances",
+                "opsworks:DescribeStacks",
+                "opsworks:UpdateApp",
+                "opsworks:UpdateStack"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "cloudformation:CreateStack",
+                "cloudformation:DeleteStack",
+                "cloudformation:DescribeStacks",
+                "cloudformation:UpdateStack",
+                "cloudformation:CreateChangeSet",
+                "cloudformation:DeleteChangeSet",
+                "cloudformation:DescribeChangeSet",
+                "cloudformation:ExecuteChangeSet",
+                "cloudformation:SetStackPolicy",
+                "cloudformation:ValidateTemplate"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "codebuild:BatchGetBuilds",
+                "codebuild:StartBuild"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "devicefarm:ListProjects",
+                "devicefarm:ListDevicePools",
+                "devicefarm:GetRun",
+                "devicefarm:GetUpload",
+                "devicefarm:CreateUpload",
+                "devicefarm:ScheduleRun"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "servicecatalog:ListProvisioningArtifacts",
+                "servicecatalog:CreateProvisioningArtifact",
+                "servicecatalog:DescribeProvisioningArtifact",
+                "servicecatalog:DeleteProvisioningArtifact",
+                "servicecatalog:UpdateProduct"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "cloudformation:ValidateTemplate"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ecr:DescribeImages"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "states:DescribeExecution",
+                "states:DescribeStateMachine",
+                "states:StartExecution"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "appconfig:StartDeployment",
+                "appconfig:StopDeployment",
+                "appconfig:GetDeployment"
+            ],
+            "Resource": "*"
+        }
+    ],
+    "Version": "2012-10-17"
+}
+    POLICY
+}
+
+resource "aws_iam_role" "S3DeployRole" {
+    name                        = "S3DeployRole"
+    assume_role_policy          = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": [
+                    "codedeploy.amazonaws.com"
+                ]
+            },
+            "Action": "sts:AssumeRole"
+        },
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": [
+                    "cloudformation.amazonaws.com"
+                ]
+            },
+            "Action": "sts:AssumeRole"
+        },
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": [
+                    "codepipeline.amazonaws.com"
+                ]
+            },
+            "Action": "sts:AssumeRole"
+        },
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": [
+                    "${aws_iam_role.S3PipelineRole.arn}"
+                ]
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+    EOF
+}
+
+resource "aws_iam_role_policy" "S3DeployRolePolicy" {
+    name                        = "S3DeployRolePolicy"
+    role                        = aws_iam_role.S3DeployRole.id
+    policy                      = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:*"
+            ],
+            "Resource": "arn:aws:logs:*:*:*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": "arn:aws:s3:::*"
+        },
+        {
+            "Action": [
+                "apigateway:*",
+                "codedeploy:*",
+                "lambda:*",
+                "cloudformation:CreateChangeSet",
+                "iam:GetRole",
+                "iam:CreateRole",
+                "iam:DeleteRole",
+                "iam:PutRolePolicy",
+                "iam:AttachRolePolicy",
+                "iam:DeleteRolePolicy",
+                "iam:DetachRolePolicy",
+                "iam:PassRole",
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "s3:GetBucketVersioning",
+                "cloudformation:CreateStack",
+                "cloudformation:DeleteStack",
+                "cloudformation:DescribeStacks",
+                "cloudformation:UpdateStack",
+                "cloudformation:DeleteChangeSet",
+                "cloudformation:DescribeChangeSet",
+                "cloudformation:ExecuteChangeSet",
+                "cloudformation:SetStackPolicy",
+                "cloudformation:ValidateTemplate"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        }
+    ]
+}
+    EOF
+}
+
+resource "aws_codepipeline" "ShiftEmotionFrontEndPipeLine" {
+    name                        = "ShiftEmotionFrontEndPipeLine"
+    role_arn                    = aws_iam_role.S3PipelineRole.arn
+    artifact_store {
+        location                = aws_s3_bucket.ShiftEmotionPipelinesS3website.bucket
+        type                    = "S3"
+    }
+
+    stage {
+        name                    = "Source"
+        action {
+            name                    = "Source"
+            category                = "Source"
+            owner                   = "ThirdParty"
+            provider                = "GitHub"
+            version                 = "1"
+            output_artifacts        = [
+                "SourceArtifact"
+            ]
+            configuration           = {
+                Owner               = "EzioAARM"
+                Repo                = "shiftemotion-frontend-web"
+                Branch              = "master"
+                OAuthToken          = var.GithubToken
+            }
+        }
+    }
+
+    stage {
+        name                    = "Deploy"
+        action {
+            run_order           = 1
+            name                = "Deploy"
+            category            = "Deploy"
+            owner               = "AWS"
+            provider            = "S3"
+            input_artifacts     = [
+                "SourceArtifact"
+            ]
+            version             = "1"
+            configuration       = {
+                BucketName      = "shiftemotionwebsite.com"
+                Extract         = "true"
+            }
+            role_arn            = aws_iam_role.S3DeployRole.arn
+        }
+    }
+}
