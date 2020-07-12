@@ -8,7 +8,7 @@ resource "aws_s3_bucket" "ShiftEmotionFrontEndWeb" {
   
 
 resource "aws_s3_bucket_policy" "s3bucketpolicy" {
-    bucket = "${aws_s3_bucket.ShiftEmotionFrontEndWeb.id}"
+    bucket = aws_s3_bucket.ShiftEmotionFrontEndWeb.id
 
     policy = <<POLICY
 {
