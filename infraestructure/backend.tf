@@ -149,7 +149,7 @@ resource "aws_ecs_service" "SpotifyAPI" {
 resource "aws_cloudwatch_metric_alarm" "ShiftEmotionHighUsage" {
   alarm_name          = "ShiftEmotionHighUsage"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "2"
+  evaluation_periods  = "1"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/ECS"
   period              = "120"
@@ -163,7 +163,7 @@ resource "aws_cloudwatch_metric_alarm" "ShiftEmotionHighUsage" {
 resource "aws_cloudwatch_metric_alarm" "ShiftEmotionLowUsage" {
   alarm_name          = "ShiftEmotionLowUsage"
   comparison_operator = "LessThanOrEqualToThreshold"
-  evaluation_periods  = "2"
+  evaluation_periods  = "1"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/ECS"
   period              = "120"
