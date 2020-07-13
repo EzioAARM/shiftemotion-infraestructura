@@ -104,6 +104,24 @@ resource "aws_ecs_task_definition" "shiftEmotionSpotifyTask" {
         "memoryReservation": 128,
         "execution_role_arn": "${aws_iam_role.shiftEmotionTaskRole.arn}",
         "image": "${aws_ecr_repository.shiftEmotion.repository_url}:latest",
+        "environment": [
+                {
+                    "name": "AWS_ACCESS_KEY_ID",
+                    "value": "${var.AWSaccessKey}"
+                },
+                {
+                    "name": "AWS_SECRET_ACCESS_KEY",
+                    "value": "${var.AWSsecretKey}"
+                },
+                {
+                    "name": "S3_IMAGE_BUCKET",
+                    "value": "${aws_s3_bucket.ShiftEmotionImages.id}"
+                },
+                {
+                    "name": "REGION",
+                    "value": "us-west-2"
+                }
+            ],
         "portMappings": [
             {
                 "containerPort": 3000,
