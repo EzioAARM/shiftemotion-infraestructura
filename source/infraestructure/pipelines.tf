@@ -9,7 +9,7 @@ resource "aws_s3_bucket" "ShiftEmotionPipelinesLambda" {
 resource "aws_codebuild_project" "shiftemtion_sam_project" {
     name                        = "shiftemtion_sam_project"
     description                 = "Proyecto de compilación para proyecto en AWS SAM"
-    service_role                = aws_iam_role.LambdaBuildIAMRole.arn
+    service_role                = var.LambdaBuildIAMRole_arn
     artifacts {
         type = "CODEPIPELINE"
     }
@@ -34,7 +34,7 @@ resource "aws_codebuild_project" "shiftemtion_sam_project" {
 
 resource "aws_codepipeline" "ShiftEmotionLambdaPipeline" {
     name                        = "ShiftEmotionLambdaPipeline"
-    role_arn                    = aws_iam_role.LambdaPipelineIAMRole.arn
+    role_arn                    = var.LambdaPipelineIAMRole_arn
     artifact_store {
         location                = aws_s3_bucket.ShiftEmotionPipelinesLambda.bucket
         type                    = "S3"
@@ -98,9 +98,9 @@ resource "aws_codepipeline" "ShiftEmotionLambdaPipeline" {
                 StackName       = "shiftemotion-lambda-backend"
                 TemplatePath    = "BuildArtifact::outputtemplate.yml"
                 ChangeSetName   = "shiftemotion-lambda-backend-changeset"
-                RoleArn         = aws_iam_role.LambdaDeployIAMRole.arn
+                RoleArn         = var.LambdaDeployIAMRole_arn
             }
-            role_arn            = aws_iam_role.LambdaDeployIAMRole.arn
+            role_arn            = var.LambdaDeployIAMRole_arn
         }
 
         action {
@@ -136,7 +136,7 @@ resource "aws_s3_bucket" "ShiftEmotionPipelinesECR" {
 resource "aws_codebuild_project" "shiftemotion_docker_project" {
     name                        = "shiftemotion_docker_project"
     description                 = "Proyecto de compilacion para proyecto en ECR"
-    service_role                = aws_iam_role.ECRDockerBuildIAMRole.arn 
+    service_role                = var.ECRDockerBuildIAMRole_arn 
     artifacts {
         type = "CODEPIPELINE"
     }
@@ -182,7 +182,7 @@ resource "aws_codebuild_project" "shiftemotion_docker_project" {
 
 resource "aws_codepipeline" "ShiftEmotionECRPipeLine" {
     name                        = "ShiftEmotionECRPipeLine"
-    role_arn                    = aws_iam_role.ECRPipelineIAMRole.arn
+    role_arn                    = var.ECRPipelineIAMRole_arn
     artifact_store {
         location                = aws_s3_bucket.ShiftEmotionPipelinesECR.bucket
         type                    = "S3"
@@ -244,7 +244,7 @@ resource "aws_codepipeline" "ShiftEmotionECRPipeLine" {
                 ClusterName     = "ShiftEmotionSpotifyCluster"
                 ServiceName     = "SpotifyAPI"
             }
-            role_arn            = aws_iam_role.ECRDeployIAMRole.arn
+            role_arn            = var.ECRDeployIAMRole_arn
         }
     }
 
@@ -263,7 +263,7 @@ resource "aws_s3_bucket" "ShiftEmotionPipelinesS3website" {
 
 resource "aws_codepipeline" "ShiftEmotionFrontEndPipeLine" {
     name                        = "ShiftEmotionFrontEndPipeLine"
-    role_arn                    = aws_iam_role.S3PipelineRole.arn
+    role_arn                    = var.S3PipelineRole_arn
     artifact_store {
         location                = aws_s3_bucket.ShiftEmotionPipelinesS3website.bucket
         type                    = "S3"
@@ -305,7 +305,7 @@ resource "aws_codepipeline" "ShiftEmotionFrontEndPipeLine" {
                 BucketName      = aws_s3_bucket.ShiftEmotionFrontEndWeb.id
                 Extract         = "true"
             }
-            role_arn            = aws_iam_role.S3DeployRole.arn
+            role_arn            = var.S3DeployRole_arn
         }
     }
 }
@@ -322,7 +322,7 @@ resource "aws_s3_bucket" "ShiftEmotionPipelinesWebApp" {
 resource "aws_codebuild_project" "shiftemtion_react_project" {
     name                        = "shiftemtion_react_project"
     description                 = "Proyecto de compilación para FrontEnd WebApp"
-    service_role                = aws_iam_role.WebAppBuildIAMRole.arn
+    service_role                = var.WebAppBuildIAMRole_arn
     artifacts {
         type = "CODEPIPELINE"
     }
@@ -347,7 +347,7 @@ resource "aws_codebuild_project" "shiftemtion_react_project" {
 
 resource "aws_codepipeline" "ShiftEmotionWebAppPipeline" {
     name                        = "ShiftEmotionWebAppPipeline"
-    role_arn                    = aws_iam_role.WebAppPipelineIAMRole.arn
+    role_arn                    = var.WebAppPipelineIAMRole_arn
     artifact_store {
         location                = aws_s3_bucket.ShiftEmotionPipelinesWebApp.bucket
         type                    = "S3"
