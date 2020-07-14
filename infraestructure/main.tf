@@ -1,3 +1,8 @@
+variable "bucketImagenes" {
+    type = string
+    default = "terraform-20200714055831705400000001"
+}
+
 resource "aws_s3_bucket" "ShiftEmotionFrontEndWeb" {
   #bucket = "shiftemotionwebsite.com"
   acl    = "public-read"
@@ -5,7 +10,6 @@ resource "aws_s3_bucket" "ShiftEmotionFrontEndWeb" {
     index_document = "login-page.html"
     }
 }
-  
 
 resource "aws_s3_bucket_policy" "s3bucketpolicy" {
     bucket = aws_s3_bucket.ShiftEmotionFrontEndWeb.id
@@ -19,7 +23,7 @@ resource "aws_s3_bucket_policy" "s3bucketpolicy" {
             "Effect": "Allow",
             "Principal": "*",
             "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::shiftemotionwebsite.com/*"
+            "Resource": "arn:aws:s3:::${aws_s3_bucket.ShiftEmotionFrontEndWeb.id}/*"
         }
     ]
 }
@@ -48,7 +52,7 @@ resource "aws_s3_bucket_policy" "s3bucketpolicyWebApp" {
             "Effect": "Allow",
             "Principal": "*",
             "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::shiftemotionwebapp.com/*"
+            "Resource": "arn:aws:s3:::${aws_s3_bucket.ShiftEmotionWebApp.id}/*"
         }
     ]
 }

@@ -940,6 +940,10 @@ resource "aws_codepipeline" "ShiftEmotionECRPipeLine" {
             role_arn            = aws_iam_role.ECRDeployIAMRole.arn
         }
     }
+
+    depends_on = [
+        aws_ecs_service.SpotifyAPI
+    ]
 }
 
 #Pipeline para continous delivery de FrontEnd Web

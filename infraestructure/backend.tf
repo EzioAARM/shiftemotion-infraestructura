@@ -115,7 +115,7 @@ resource "aws_ecs_task_definition" "shiftEmotionSpotifyTask" {
                 },
                 {
                     "name": "S3_IMAGE_BUCKET",
-                    "value": "${aws_s3_bucket.ShiftEmotionImages.id}"
+                    "value": "${var.bucketImagenes}"
                 },
                 {
                     "name": "REGION",
@@ -146,7 +146,7 @@ resource "aws_ecs_service" "SpotifyAPI" {
     cluster                     = aws_ecs_cluster.shiftEmotionSpotifyCluster.id
     task_definition             = aws_ecs_task_definition.shiftEmotionSpotifyTask.arn
     launch_type                 = "FARGATE"
-    desired_count               = 2
+    desired_count               = 1
     load_balancer {
         target_group_arn        = aws_lb_target_group.shiftEmotionSpotifyTarget.arn
         container_name          = "ShiftEmotionSpotifyIntegration"
@@ -194,7 +194,7 @@ resource "aws_cloudwatch_metric_alarm" "ShiftEmotionLowUsage" {
 
 resource "aws_appautoscaling_target" "ecs_target" {
   max_capacity       = 5
-  min_capacity       = 2
+  min_capacity       = 1
   resource_id        = "service/${aws_ecs_cluster.shiftEmotionSpotifyCluster.name}/${aws_ecs_service.SpotifyAPI.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
