@@ -1289,7 +1289,7 @@ resource "aws_codepipeline" "ShiftEmotionFrontEndPipeLine" {
             ]
             version             = "1"
             configuration       = {
-                BucketName      = "shiftemotionwebsite.com"
+                BucketName      = aws_s3_bucket.ShiftEmotionFrontEndWeb.id
                 Extract         = "true"
             }
             role_arn            = aws_iam_role.S3DeployRole.arn

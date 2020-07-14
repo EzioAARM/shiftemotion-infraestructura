@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "ShiftEmotionFrontEndWeb" {
-  bucket = "shiftemotionwebsite.com"
+  #bucket = "shiftemotionwebsite.com"
   acl    = "public-read"
   website {
     index_document = "login-page.html"
@@ -26,15 +26,8 @@ resource "aws_s3_bucket_policy" "s3bucketpolicy" {
     POLICY
 }
 
-resource "aws_s3_bucket" "ShiftEmotionImages" {
-    acl                     = "private"
-    tags                    = {
-        Project                = "Bucket para almacenar las fotos de los usuarios"
-    }
-}
-
 resource "aws_s3_bucket" "ShiftEmotionWebApp" {
-  bucket = "shiftemotionwebapp.com"
+  #bucket = "shiftemotionwebapp.com"
   acl    = "public-read"
   website {
     index_document = "index.html"
