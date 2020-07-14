@@ -84,8 +84,8 @@ POLICY
 }
 
 resource "aws_iam_role_policy_attachment" "PolicyAttachmentImagesReplicaS3" {
-  role       = "${aws_iam_role.RoleImagesReplicaS3.name}"
-  policy_arn = "${aws_iam_policy.PolicyImagesReplicaS3.arn}"
+  role       = aws_iam_role.RoleImagesReplicaS3.name
+  policy_arn = aws_iam_policy.PolicyImagesReplicaS3.arn
 }
 
 resource "aws_s3_bucket" "ShiftEmotionImagesReplication" {
