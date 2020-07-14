@@ -1,7 +1,4 @@
-variable "bucketImagenes" {
-    type = string
-    default = "terraform-20200714055831705400000001"
-}
+variable "bucketImagenes" {}
 
 resource "aws_s3_bucket" "ShiftEmotionFrontEndWeb" {
   #bucket = "shiftemotionwebsite.com"

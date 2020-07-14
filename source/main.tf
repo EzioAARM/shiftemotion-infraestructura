@@ -40,6 +40,7 @@ module "shiftEmotionOregon" {
     shiftEmotionTaskRole_id = module.shiftEmotionPermission.shiftEmotionTaskRole_id
 
     zones = var.zonesOregon
+    bucketImagenes = aws_s3_bucket.ShiftEmotionImages.id
 }
 
 module "shiftEmotionVirginia" {
@@ -76,4 +77,5 @@ module "shiftEmotionVirginia" {
     shiftEmotionTaskRole_id = module.shiftEmotionPermission.shiftEmotionTaskRole_id
 
     zones = var.zonesVirginia
+    bucketImagenes = aws_s3_bucket.ShiftEmotionImages.id
 }
