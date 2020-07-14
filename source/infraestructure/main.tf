@@ -19,3 +19,41 @@ resource "aws_s3_bucket" "ShiftEmotionWebApp" {
     error_document = "index.html"
     }
 }
+
+resource "aws_s3_bucket_policy" "s3bucketpolicyWebApp" {
+    bucket = aws_s3_bucket.ShiftEmotionWebApp.id
+
+    policy = <<POLICY
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AddPerm",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::${aws_s3_bucket.ShiftEmotionWebApp.id}/*"
+        }
+    ]
+}
+    POLICY
+}
+
+resource "aws_s3_bucket_policy" "s3bucketpolicy" {
+    bucket = aws_s3_bucket.ShiftEmotionFrontEndWeb.id
+
+    policy = <<POLICY
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AddPerm",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::${aws_s3_bucket.ShiftEmotionFrontEndWeb.id}/*"
+        }
+    ]
+}
+    POLICY
+}

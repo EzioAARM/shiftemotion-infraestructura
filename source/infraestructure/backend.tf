@@ -47,8 +47,8 @@ resource "aws_ecs_task_definition" "shiftEmotionSpotifyTask" {
     cpu                         = "256"
     memory                      = "512"
     network_mode                = "awsvpc"
-    task_role_arn               = aws_iam_role.shiftEmotionTaskRole.arn
-    execution_role_arn          = aws_iam_role.shiftEmotionTaskRole.arn
+    task_role_arn               = var.shiftEmotionTaskRole_arn
+    execution_role_arn          = var.shiftEmotionTaskRole_arn
     requires_compatibilities    = [
         "FARGATE"
     ]
@@ -60,7 +60,7 @@ resource "aws_ecs_task_definition" "shiftEmotionSpotifyTask" {
         "cpu": 128,
         "memory": 256,
         "memoryReservation": 128,
-        "execution_role_arn": "${aws_iam_role.shiftEmotionTaskRole.arn}",
+        "execution_role_arn": "${var.shiftEmotionTaskRole_arn}",
         "image": "${aws_ecr_repository.shiftEmotion.repository_url}:latest",
         "environment": [
                 {

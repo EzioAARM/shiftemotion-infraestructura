@@ -657,7 +657,7 @@ resource "aws_iam_role_policy" "ECRDeployIAMPolicy" {
             "Action": [
                 "s3:*"
             ],
-            "Resource": "${aws_s3_bucket.ShiftEmotionPipelinesECR.arn}"
+            "Resource": "*"
         },
         {
             "Action": [
@@ -1375,42 +1375,4 @@ resource "aws_iam_role_policy" "shiftEmotionTaskPolicy" {
     ]
 }
     EOF
-}
-
-resource "aws_s3_bucket_policy" "s3bucketpolicy" {
-    bucket = aws_s3_bucket.ShiftEmotionFrontEndWeb.id
-
-    policy = <<POLICY
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "AddPerm",
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::${aws_s3_bucket.ShiftEmotionFrontEndWeb.id}/*"
-        }
-    ]
-}
-    POLICY
-}
-
-resource "aws_s3_bucket_policy" "s3bucketpolicyWebApp" {
-    bucket = aws_s3_bucket.ShiftEmotionWebApp.id
-
-    policy = <<POLICY
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "AddPerm",
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::${aws_s3_bucket.ShiftEmotionWebApp.id}/*"
-        }
-    ]
-}
-    POLICY
 }
