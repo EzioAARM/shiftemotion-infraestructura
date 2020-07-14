@@ -332,7 +332,7 @@ resource "aws_codebuild_project" "shiftemtion_react_project" {
         type                    = "LINUX_CONTAINER"
         environment_variable {
                 name                = "BUCKET"
-                value               = aws_s3_bucket.ShiftEmotionPipelinesWebApp.id
+                value               = aws_s3_bucket.ShiftEmotionWebApp.id
             }
         }
 
