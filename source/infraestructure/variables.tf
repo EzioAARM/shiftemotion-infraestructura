@@ -23,3 +23,5 @@ variable "WebAppBuildIAMRole_id" {}
 variable "WebAppPipelineIAMRole_id" {}
 variable "WebAppDeployIAMRole_id" {}
 variable "shiftEmotionTaskRole_id" {}
+
+variable "zones" {}

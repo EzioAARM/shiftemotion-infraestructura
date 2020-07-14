@@ -38,6 +38,8 @@ module "shiftEmotionOregon" {
     WebAppPipelineIAMRole_id = module.shiftEmotionPermission.WebAppPipelineIAMRole_id
     WebAppDeployIAMRole_id = module.shiftEmotionPermission.WebAppDeployIAMRole_id
     shiftEmotionTaskRole_id = module.shiftEmotionPermission.shiftEmotionTaskRole_id
+
+    zones = var.zonesOregon
 }
 
 module "shiftEmotionVirginia" {
@@ -72,4 +74,6 @@ module "shiftEmotionVirginia" {
     WebAppPipelineIAMRole_id = module.shiftEmotionPermission.WebAppPipelineIAMRole_id
     WebAppDeployIAMRole_id = module.shiftEmotionPermission.WebAppDeployIAMRole_id
     shiftEmotionTaskRole_id = module.shiftEmotionPermission.shiftEmotionTaskRole_id
+
+    zones = var.zonesVirginia
 }

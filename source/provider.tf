@@ -2,7 +2,7 @@ provider "aws" {
     region  = "us-west-2"
 }
 
-variable "zones" {
+variable "zonesOregon" {
     type    = list
     default = [
         "us-west-2a",
@@ -16,7 +16,7 @@ provider "aws" {
     region  = "us-east-1"
 }
 
-variable "zones" {
+variable "zonesVirginia" {
     type    = list
     default = [
         "us-east-1a",
