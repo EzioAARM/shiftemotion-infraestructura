@@ -21,6 +21,21 @@ resource "aws_codebuild_project" "shiftemtion_sam_project" {
             name                = "BUCKET"
             value               = aws_s3_bucket.ShiftEmotionPipelinesLambda.id
         }
+
+        environment_variable {
+            name                = "AWS_ACCESS_KEY_ID"
+            value               = var.AWSaccessKey
+        }
+
+        environment_variable {
+            name                = "AWS_SECRET_ACCESS_KEY"
+            value               = var.AWSsecretKey
+        }
+
+        environment_variable {
+            name                = "AWS_REGION"
+            value               = "us-west-2"
+        }
     }
 
     source {
