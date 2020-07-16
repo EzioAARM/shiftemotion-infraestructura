@@ -36,6 +36,16 @@ resource "aws_codebuild_project" "shiftemtion_sam_project" {
             name                = "AWS_REGION"
             value               = "us-west-2"
         }
+
+        environment_variable {
+            name                = "SPOTIFY_CLIENT_ID"
+            value               = var.SpotifyCLient
+        }
+
+        environment_variable {
+            name                = "SPOTIFY_SECRET"
+            value               = var.SpotifySecret
+        }
     }
 
     source {
