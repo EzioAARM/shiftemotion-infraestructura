@@ -95,7 +95,7 @@ resource "aws_dynamodb_table" "passwordsTokensr1" {
 
     attribute {
         name            = "id"
-        type            = "N"
+        type            = "S"
     }
 }
 
@@ -109,7 +109,7 @@ resource "aws_dynamodb_table" "passwordsTokensr2" {
 
     attribute {
         name            = "id"
-        type            = "N"
+        type            = "S"
     }
 }
 
@@ -181,7 +181,7 @@ resource "aws_dynamodb_table" "usuariosr1" {
 
     attribute {
         name            = "id"
-        type            = "N"
+        type            = "S"
     }
 }
 
@@ -195,7 +195,7 @@ resource "aws_dynamodb_table" "usuariosr2" {
 
     attribute {
         name            = "id"
-        type            = "N"
+        type            = "S"
     }
 }
 
